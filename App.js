@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import AppProvider, { AppContext } from "./context/AppProvider";
+import { APP_PAGES, COLORS } from "./context/Settings";
+import HomeScreen from "./components/Screen/HomeScreen";
 
-export default function App() {
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AppProvider>
+      <NavWrapper />
+    </AppProvider>
   );
 }
+
+const NavWrapper = () => {
+  const { navPage, setNavPage } = React.useContext(AppContext);
+
+  React.useEffect(() => {
+    console.log("App Nav: ", navPage);
+  }, [navPage]);
+
+  return (
+    <View style={styles.container}>
+      <StatusBar
+        animated={true}
+        backgroundColor={COLORS.BACKGROUND}
+        barStyle={"light-content"}
+        style="light"
+      />
+      {navPage === APP_PAGES.APP.HOME && <HomeScreen />}
+    </View>
+  );
+};
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: COLORS.BACKGROUND,
   },
 });
