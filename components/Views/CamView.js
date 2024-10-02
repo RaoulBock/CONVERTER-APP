@@ -1,26 +1,56 @@
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React from "react";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import React, { useContext, useState } from "react";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
 import { AppContext } from "../../context/AppProvider";
 import Button from "../Button/Button";
 import { COLORS } from "../../context/Settings";
 
 const CamView = () => {
-  const { setCameraModelVisable } = React.useContext(AppContext);
+  const { setCameraModelVisable } = useContext(AppContext);
   const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = React.useState("back");
-  const [cameraRef, setCameraRef] = React.useState(null);
-  const [capturedImage, setCapturedImage] = React.useState(null);
+  const [facing, setFacing] = useState("back");
+  const [cameraRef, setCameraRef] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+
+  const generatePDF = async () => {
+    if (!capturedImage) {
+      console.error("No image captured");
+      return;
+    }
+
+    try {
+      // Convert the image to a base64 string
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const base64Image = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      const html = `
+        <html>
+          <body>
+            <img src="${base64Image}" alt="Captured Image" style="width: 100%; max-width: 600px;" />
+          </body>
+        </html>
+      `;
+
+      const file = await Print.printToFileAsync({
+        html: html,
+        base64: false,
+      });
+
+      await shareAsync(file.uri, { UTI: ".pdf", mimeType: "application/pdf" });
+    } catch (error) {
+      console.error("Error generating or sharing PDF:", error);
+    }
+  };
 
   if (!permission) {
-    // Camera permissions are still loading.
     return (
       <View>
         <Text>Requesting camera permission...</Text>
@@ -29,8 +59,6 @@ const CamView = () => {
   }
 
   if (!permission.granted) {
-    // setCameraModelVisable(false);
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
@@ -63,17 +91,13 @@ const CamView = () => {
           ref={(ref) => setCameraRef(ref)}
         >
           <View style={styles.buttonContainer}>
-            {/* <TouchableOpacity style={styles.button} onPress={_takePicture}>
-              <Text style={styles.buttonText}>Take Photo</Text>
-            </TouchableOpacity> */}
             <Button onPress={_takePicture} title={"Take Photo"} />
           </View>
-        </CameraView> // Show the captured image
+        </CameraView>
       ) : (
         <View style={styles.camera}>
           <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
-
-          <Button onPress={_retakePicture} title={"Convert"} />
+          <Button onPress={generatePDF} title={"Convert to PDF"} />
           <Button
             onPress={_retakePicture}
             title={"Take Another"}
@@ -109,7 +133,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   button: {
-    //flex: 0.1,
     alignSelf: "flex-end",
     alignItems: "center",
     backgroundColor: "white",

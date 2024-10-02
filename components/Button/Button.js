@@ -4,7 +4,11 @@ import { COLORS } from "../../context/Settings";
 
 const Button = ({ onPress, title, style, styleText }) => {
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.button, style]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
       <Text style={[styles.buttonText, styleText]}>{title}</Text>
     </TouchableOpacity>
   );
