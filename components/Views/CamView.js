@@ -1,11 +1,18 @@
 import React, { useContext, useState } from "react";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { AppContext } from "../../context/AppProvider";
 import Button from "../Button/Button";
-import { COLORS } from "../../context/Settings";
+import { APP_ICONS, COLORS } from "../../context/Settings";
 
 const CamView = () => {
   const { setCameraModelVisable } = useContext(AppContext);
@@ -96,11 +103,22 @@ const CamView = () => {
         </CameraView>
       ) : (
         <View style={styles.camera}>
-          <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: capturedImage }}
+              style={styles.capturedImage}
+            />
+            <TouchableOpacity
+              style={styles.addButtonContainer}
+              activeOpacity={0.8}
+            >
+              <Text>{APP_ICONS.ADD}</Text>
+            </TouchableOpacity>
+          </View>
           <Button onPress={generatePDF} title={"Convert to PDF"} />
           <Button
             onPress={_retakePicture}
-            title={"Take Another"}
+            title={"Re-Take Picture"}
             style={{
               marginTop: 10,
               borderWidth: 1,
@@ -150,11 +168,20 @@ const styles = StyleSheet.create({
   },
   capturedImage: {
     resizeMode: "cover",
-    flex: 1,
+    height: "100%",
     borderRadius: 12,
     marginBottom: 10,
   },
   message: {
     marginVertical: 16,
   },
+  addButtonContainer: {
+    backgroundColor: COLORS.BACKGROUND,
+    position: "absolute",
+    right: 10,
+    bottom: 10,
+    padding: 10,
+    borderRadius: 50,
+  },
+  imageContainer: { flex: 1, marginBottom: 10 },
 });

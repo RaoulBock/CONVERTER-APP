@@ -32,7 +32,7 @@ const HomeScreen = () => {
           visible={cameraModelVisable}
           onClose={setCameraModelVisable}
           children={<CamView />}
-          customHeight={"90%"}
+          customHeight={"97%"}
         />
       )}
 

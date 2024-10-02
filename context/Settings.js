@@ -21,4 +21,7 @@ export const APP_ICONS = {
     <Ionicons name={"image-outline"} style={{ color: "#fff", fontSize: 20 }} />
   ),
   PDF: <AntDesign name={"pdffile1"} style={{ color: "#fff", fontSize: 20 }} />,
+  ADD: (
+    <Ionicons name={"add-outline"} style={{ color: "#fff", fontSize: 20 }} />
+  ),
 };
