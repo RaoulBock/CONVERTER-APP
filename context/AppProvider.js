@@ -10,6 +10,7 @@ const AppProvider = ({ children }) => {
   const [navPage, setNavPage] = React.useState(APP_PAGES.APP.HOME);
   const [cameraModelVisable, setCameraModelVisable] = React.useState(false);
   const [docModelVisable, setDocModelVisable] = React.useState(false);
+  const [pdfToDocModelVisable, setPDFToDocModelVisable] = React.useState(false);
 
   return (
     <AppContext.Provider
@@ -20,6 +21,8 @@ const AppProvider = ({ children }) => {
         setCameraModelVisable,
         docModelVisable,
         setDocModelVisable,
+        pdfToDocModelVisable,
+        setPDFToDocModelVisable,
       }}
     >
       {children}

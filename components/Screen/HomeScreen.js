@@ -7,6 +7,7 @@ import { AppContext } from "../../context/AppProvider";
 import Models from "../Model/Model";
 import CamView from "../Views/CamView";
 import DocToPdfView from "../Views/DocToPdfView";
+import PdfToDocView from "../Views/PdfToDocVIew";
 
 const HomeScreen = () => {
   const {
@@ -14,6 +15,8 @@ const HomeScreen = () => {
     cameraModelVisable,
     docModelVisable,
     setDocModelVisable,
+    pdfToDocModelVisable,
+    setPDFToDocModelVisable,
   } = React.useContext(AppContext);
 
   const COVERT_CAMERA_TO_PDF = () => {
@@ -24,6 +27,11 @@ const HomeScreen = () => {
   const CONVERT_DOC_TO_PDF = () => {
     console.log("Converting document to PDF");
     setDocModelVisable(true);
+  };
+
+  const CONVERT_PDF_DOC = () => {
+    console.log("Converting PDF to document");
+    setPDFToDocModelVisable(true);
   };
 
   return (
@@ -46,6 +54,15 @@ const HomeScreen = () => {
         />
       )}
 
+      {pdfToDocModelVisable && (
+        <Models
+          visible={pdfToDocModelVisable}
+          onClose={setPDFToDocModelVisable}
+          children={<PdfToDocView />}
+          customHeight={"97%"}
+        />
+      )}
+
       <Nav title={"Image Converor"} />
       <Card
         icon={APP_ICONS.CAMERA}
@@ -58,6 +75,13 @@ const HomeScreen = () => {
         iconTwo={APP_ICONS.PDF}
         title={"Doc To PDF"}
         onPress={CONVERT_DOC_TO_PDF}
+      />
+
+      <Card
+        icon={APP_ICONS.PDF}
+        iconTwo={APP_ICONS.DOC}
+        title={"PDF To DOC"}
+        onPress={CONVERT_PDF_DOC}
       />
     </View>
   );
