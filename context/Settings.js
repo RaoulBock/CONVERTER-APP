@@ -24,4 +24,10 @@ export const APP_ICONS = {
   ADD: (
     <Ionicons name={"add-outline"} style={{ color: "#fff", fontSize: 20 }} />
   ),
+  DOC: (
+    <Ionicons
+      name={"document-text-outline"}
+      style={{ color: "#fff", fontSize: 20 }}
+    />
+  ),
 };

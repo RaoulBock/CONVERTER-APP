@@ -14,7 +14,7 @@ const Card = ({ title, icon, iconTwo, onPress }) => {
         <View style={styles.container}>
           <Text>{icon}</Text>
         </View>
-        <Text>➜</Text>
+        <Text style={{ color: "white" }}>➜</Text>
         <View style={styles.container}>
           <Text>{iconTwo}</Text>
         </View>
@@ -37,10 +37,11 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontWeight: "500",
     fontSize: 16,
+    textAlign: "center",
   },
   grid: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
     marginTop: 16,
   },

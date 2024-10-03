@@ -9,7 +9,7 @@ export const AppContext = React.createContext({
 const AppProvider = ({ children }) => {
   const [navPage, setNavPage] = React.useState(APP_PAGES.APP.HOME);
   const [cameraModelVisable, setCameraModelVisable] = React.useState(false);
-  const [galleryModelVisable, setGalleryModelVisable] = React.useState(false);
+  const [docModelVisable, setDocModelVisable] = React.useState(false);
 
   return (
     <AppContext.Provider
@@ -18,8 +18,8 @@ const AppProvider = ({ children }) => {
         setNavPage,
         cameraModelVisable,
         setCameraModelVisable,
-        galleryModelVisable,
-        setGalleryModelVisable,
+        docModelVisable,
+        setDocModelVisable,
       }}
     >
       {children}

@@ -6,13 +6,14 @@ import { APP_ICONS } from "../../context/Settings";
 import { AppContext } from "../../context/AppProvider";
 import Models from "../Model/Model";
 import CamView from "../Views/CamView";
+import DocToPdfView from "../Views/DocToPdfView";
 
 const HomeScreen = () => {
   const {
     setCameraModelVisable,
-    setGalleryModelVisable,
     cameraModelVisable,
-    galleryModelVisable,
+    docModelVisable,
+    setDocModelVisable,
   } = React.useContext(AppContext);
 
   const COVERT_CAMERA_TO_PDF = () => {
@@ -20,9 +21,9 @@ const HomeScreen = () => {
     setCameraModelVisable(true);
   };
 
-  const CONVERT_GALLERY_TO_PDF = () => {
-    console.log("Converting image from gallery to PDF");
-    setGalleryModelVisable(true);
+  const CONVERT_DOC_TO_PDF = () => {
+    console.log("Converting document to PDF");
+    setDocModelVisable(true);
   };
 
   return (
@@ -36,25 +37,27 @@ const HomeScreen = () => {
         />
       )}
 
-      {galleryModelVisable && (
+      {docModelVisable && (
         <Models
-          visible={galleryModelVisable}
-          onClose={setGalleryModelVisable}
+          visible={docModelVisable}
+          onClose={setDocModelVisable}
+          children={<DocToPdfView />}
+          customHeight={"97%"}
         />
       )}
 
-      <Nav title={"Image to PDF Converor"} />
+      <Nav title={"Image Converor"} />
       <Card
         icon={APP_ICONS.CAMERA}
         iconTwo={APP_ICONS.PDF}
-        title={"Convert Image From Camera To PDF"}
+        title={"Image To PDF"}
         onPress={COVERT_CAMERA_TO_PDF}
       />
       <Card
-        icon={APP_ICONS.GALLARY}
+        icon={APP_ICONS.DOC}
         iconTwo={APP_ICONS.PDF}
-        title={"Convert Image From Gallery To PDF"}
-        onPress={CONVERT_GALLERY_TO_PDF}
+        title={"Doc To PDF"}
+        onPress={CONVERT_DOC_TO_PDF}
       />
     </View>
   );
