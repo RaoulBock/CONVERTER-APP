@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
+import axios from "axios";
+
 import React, { useState, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import {
@@ -24,6 +26,7 @@ const HomeScreen = () => {
   const [capturedImage, setCapturedImage] = useState(null);
   const [zoom, setZoom] = useState(0);
   const [selectedOption, setSelectedOption] = useState("Search");
+  const [flashEnabled, setFlashEnabled] = React.useState(false);
 
   if (!permission) {
     return (
@@ -71,6 +74,10 @@ const HomeScreen = () => {
       name: "Homework",
       icon: APP_ICONS.HOMEWORK,
     },
+    {
+      name: "Text",
+      icon: APP_ICONS.DOC,
+    },
   ];
 
   return (
@@ -82,10 +89,13 @@ const HomeScreen = () => {
             facing={facing}
             zoom={zoom}
             ref={cameraRef}
+            enableTorch={flashEnabled}
           >
             <View style={styles.navBar}>
-              <TouchableOpacity>
-                <Text style={styles.navBarIcon}>{APP_ICONS.FLASH_OFF}</Text>
+              <TouchableOpacity onPress={() => setFlashEnabled(!flashEnabled)}>
+                <Text style={styles.navBarIcon}>
+                  {flashEnabled ? APP_ICONS.FLASH_ON : APP_ICONS.FLASH_OFF}
+                </Text>
               </TouchableOpacity>
               <Text style={styles.navBarText}>BOOTH</Text>
               <TouchableOpacity>
@@ -95,7 +105,7 @@ const HomeScreen = () => {
             <View style={styles.scanIconContainer}>
               <Ionicons
                 name="scan"
-                size={windowWidth * 0.9}
+                size={windowWidth * 1}
                 color="rgba(255, 255, 255, 0.5)"
               />
             </View>
@@ -103,7 +113,7 @@ const HomeScreen = () => {
               <Button
                 title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
                 style={styles.cambutton}
-                onPress={_takePicture}
+                //onPress={_takePicture}
               />
             </View>
           </CameraView>

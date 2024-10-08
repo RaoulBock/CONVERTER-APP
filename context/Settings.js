@@ -30,7 +30,7 @@ export const APP_ICONS = {
   DOC: (
     <Ionicons
       name={"document-text-outline"}
-      style={{ color: "#fff", fontSize: 20 }}
+      style={{ color: COLORS.BLACK, fontSize: 30 }}
     />
   ),
   SEARCH: (
