@@ -15,7 +15,10 @@ export const COLORS = {
 
 export const APP_ICONS = {
   CAMERA: (
-    <Ionicons name={"camera-outline"} style={{ color: "#fff", fontSize: 20 }} />
+    <Ionicons
+      name={"camera-outline"}
+      style={{ color: COLORS.BACKGROUND, fontSize: 30 }}
+    />
   ),
   GALLARY: (
     <Ionicons name={"image-outline"} style={{ color: "#fff", fontSize: 20 }} />
@@ -28,6 +31,12 @@ export const APP_ICONS = {
     <Ionicons
       name={"document-text-outline"}
       style={{ color: "#fff", fontSize: 20 }}
+    />
+  ),
+  SEARCH: (
+    <Ionicons
+      name={"search-outline"}
+      style={{ color: COLORS.BACKGROUND, fontSize: 30 }}
     />
   ),
 };

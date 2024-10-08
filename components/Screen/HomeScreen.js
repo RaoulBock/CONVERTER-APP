@@ -1,89 +1,99 @@
-import { StyleSheet, Text, View, Platform, StatusBar } from "react-native";
-import React from "react";
-import Nav from "../Nav/Nav";
-import Card from "../Card/Card";
-import { APP_ICONS } from "../../context/Settings";
-import { AppContext } from "../../context/AppProvider";
-import Models from "../Model/Model";
-import CamView from "../Views/CamView";
-import DocToPdfView from "../Views/DocToPdfView";
-import PdfToDocView from "../Views/PdfToDocVIew";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  StatusBar,
+  ScrollView,
+} from "react-native";
+import React, { useState, useRef } from "react";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import {
+  GestureHandlerRootView,
+  PinchGestureHandler,
+} from "react-native-gesture-handler";
+import Button from "../Button/Button";
+import { APP_ICONS, COLORS } from "../../context/Settings";
 
 const HomeScreen = () => {
-  const {
-    setCameraModelVisable,
-    cameraModelVisable,
-    docModelVisable,
-    setDocModelVisable,
-    pdfToDocModelVisable,
-    setPDFToDocModelVisable,
-  } = React.useContext(AppContext);
+  const [permission, requestPermission] = useCameraPermissions();
+  const facing = "back";
+  const cameraRef = useRef(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [zoom, setZoom] = useState(0);
 
-  const COVERT_CAMERA_TO_PDF = () => {
-    console.log("Converting image from camera to PDF");
-    setCameraModelVisable(true);
+  if (!permission) {
+    return (
+      <View style={styles.outline}>
+        <Text>Requesting camera permission...</Text>
+      </View>
+    );
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.outline}>
+        <Text style={styles.message}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  const _takePicture = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync();
+      console.log(photo);
+      setCapturedImage(photo.uri);
+    }
   };
 
-  const CONVERT_DOC_TO_PDF = () => {
-    console.log("Converting document to PDF");
-    setDocModelVisable(true);
+  const _retakePicture = () => {
+    setCapturedImage(null);
   };
 
-  const CONVERT_PDF_DOC = () => {
-    console.log("Converting PDF to document");
-    setPDFToDocModelVisable(true);
+  const OPTIONS = [
+    {
+      name: "PICTURE",
+      icon: APP_ICONS.CAMERA,
+    },
+  ];
+
+  const onPinchGestureEvent = (event) => {
+    const scale = event.nativeEvent.scale;
+    const newZoom = Math.max(0, Math.min(1, zoom + (scale - 1) * 0.05));
+    setZoom(newZoom);
   };
 
   return (
-    <View style={styles.outline}>
-      {cameraModelVisable && (
-        <Models
-          visible={cameraModelVisable}
-          onClose={setCameraModelVisable}
-          children={<CamView />}
-          customHeight={"97%"}
-        />
+    <GestureHandlerRootView style={styles.container}>
+      {!capturedImage && (
+        <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
+          <CameraView
+            style={styles.camera}
+            facing={facing}
+            zoom={zoom}
+            ref={cameraRef}
+          >
+            <View style={[styles.buttonContainer]}>
+              <ScrollView horizontal>
+                {OPTIONS.map((e, i) => {
+                  return (
+                    <Button
+                      key={i}
+                      title={e.icon}
+                      style={styles.cambutton}
+                      onPress={_takePicture}
+                    />
+                  );
+                })}
+              </ScrollView>
+            </View>
+          </CameraView>
+        </PinchGestureHandler>
       )}
-
-      {docModelVisable && (
-        <Models
-          visible={docModelVisable}
-          onClose={setDocModelVisable}
-          children={<DocToPdfView />}
-          customHeight={"97%"}
-        />
-      )}
-
-      {pdfToDocModelVisable && (
-        <Models
-          visible={pdfToDocModelVisable}
-          onClose={setPDFToDocModelVisable}
-          children={<PdfToDocView />}
-          customHeight={"97%"}
-        />
-      )}
-
-      <Nav title={"Image Converor"} />
-      <Card
-        icon={APP_ICONS.CAMERA}
-        iconTwo={APP_ICONS.PDF}
-        title={"Image To PDF"}
-        onPress={COVERT_CAMERA_TO_PDF}
-      />
-      <Card
-        icon={APP_ICONS.DOC}
-        iconTwo={APP_ICONS.PDF}
-        title={"Doc To PDF"}
-        onPress={CONVERT_DOC_TO_PDF}
-      />
-
-      <Card
-        icon={APP_ICONS.PDF}
-        iconTwo={APP_ICONS.DOC}
-        title={"PDF To DOC"}
-        onPress={CONVERT_PDF_DOC}
-      />
-    </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -91,7 +101,36 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   outline: {
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+    height: "100%",
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    position: "absolute",
+    bottom: 0,
+    alignSelf: "center",
+  },
+  cambutton: {
+    width: 70,
+    height: 70,
+    alignSelf: "center",
+    justifyContent: "center",
+    borderRadius: 500,
+    backgroundColor: COLORS.WHITE,
+    borderWidth: 6,
+    borderColor: "#d9d9d9",
+    marginHorizontal: 6,
+  },
+  message: {
+    marginVertical: 10,
   },
 });

@@ -22,12 +22,12 @@ const NavWrapper = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar
+      {/* <StatusBar
         animated={true}
-        backgroundColor={COLORS.BACKGROUND}
-        barStyle={"light-content"}
-        style="light"
-      />
+        backgroundColor={COLORS.WHITE}
+        barStyle={"dark-content"}
+        style="dark"
+      /> */}
       {navPage === APP_PAGES.APP.HOME && <HomeScreen />}
     </View>
   );
@@ -38,6 +38,6 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    //backgroundColor: COLORS.BACKGROUND,
   },
 });
