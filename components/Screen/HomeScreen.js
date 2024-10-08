@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import React, { useState, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import {
@@ -7,6 +13,9 @@ import {
 } from "react-native-gesture-handler";
 import Button from "../Button/Button";
 import { APP_ICONS, COLORS } from "../../context/Settings";
+import { Ionicons, AntDesign } from "react-native-vector-icons";
+
+const { width: windowWidth } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -74,6 +83,22 @@ const HomeScreen = () => {
             zoom={zoom}
             ref={cameraRef}
           >
+            <View style={styles.navBar}>
+              <TouchableOpacity>
+                <Text style={styles.navBarIcon}>{APP_ICONS.FLASH_OFF}</Text>
+              </TouchableOpacity>
+              <Text style={styles.navBarText}>BOOTH</Text>
+              <TouchableOpacity>
+                <Text style={styles.navBarIcon}>{APP_ICONS.DOTS}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.scanIconContainer}>
+              <Ionicons
+                name="scan"
+                size={windowWidth * 0.9}
+                color="rgba(255, 255, 255, 0.5)"
+              />
+            </View>
             <View style={[styles.buttonContainer]}>
               <Button
                 title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
@@ -162,5 +187,36 @@ const styles = StyleSheet.create({
   },
   selectedOption: {
     backgroundColor: COLORS.MAIN_BACKGROUND,
+  },
+  scanIconContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  navBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 40,
+    zIndex: 2,
+  },
+  navBarIcon: {
+    color: COLORS.WHITE,
+    fontSize: 24,
+  },
+  navBarText: {
+    color: COLORS.WHITE,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

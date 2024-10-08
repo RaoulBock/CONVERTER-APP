@@ -51,4 +51,22 @@ export const APP_ICONS = {
       style={{ color: COLORS.BLACK, fontSize: 30 }}
     />
   ),
+  FLASH_OFF: (
+    <Ionicons
+      name={"flash-off-outline"}
+      style={{ color: COLORS.WHITE, fontSize: 30 }}
+    />
+  ),
+  FLASH_ON: (
+    <Ionicons
+      name={"flash-outline"}
+      style={{ color: COLORS.WHITE, fontSize: 30 }}
+    />
+  ),
+  DOTS: (
+    <Ionicons
+      name={"ellipsis-vertical-outline"}
+      style={{ color: COLORS.WHITE, fontSize: 30 }}
+    />
+  ),
 };
