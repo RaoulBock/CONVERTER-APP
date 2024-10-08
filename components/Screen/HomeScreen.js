@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Platform,
-  StatusBar,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useState, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import {
@@ -21,6 +14,7 @@ const HomeScreen = () => {
   const cameraRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [zoom, setZoom] = useState(0);
+  const [selectedOption, setSelectedOption] = useState("Search");
 
   if (!permission) {
     return (
@@ -49,22 +43,26 @@ const HomeScreen = () => {
     }
   };
 
-  const _retakePicture = () => {
-    setCapturedImage(null);
-  };
-
-  const OPTIONS = [
-    {
-      name: "PICTURE",
-      icon: APP_ICONS.CAMERA,
-    },
-  ];
-
   const onPinchGestureEvent = (event) => {
     const scale = event.nativeEvent.scale;
     const newZoom = Math.max(0, Math.min(1, zoom + (scale - 1) * 0.05));
     setZoom(newZoom);
   };
+
+  const OPTIONS = [
+    {
+      name: "Translate",
+      icon: APP_ICONS.TRANSLATE,
+    },
+    {
+      name: "Search",
+      icon: APP_ICONS.SEARCH,
+    },
+    {
+      name: "Homework",
+      icon: APP_ICONS.HOMEWORK,
+    },
+  ];
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -77,22 +75,31 @@ const HomeScreen = () => {
             ref={cameraRef}
           >
             <View style={[styles.buttonContainer]}>
-              <ScrollView horizontal>
-                {OPTIONS.map((e, i) => {
-                  return (
-                    <Button
-                      key={i}
-                      title={e.icon}
-                      style={styles.cambutton}
-                      onPress={_takePicture}
-                    />
-                  );
-                })}
-              </ScrollView>
+              <Button
+                title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
+                style={styles.cambutton}
+                onPress={_takePicture}
+              />
             </View>
           </CameraView>
         </PinchGestureHandler>
       )}
+      <View style={styles.extraOptions}>
+        {OPTIONS.map((option, index) => {
+          const isSelected = selectedOption === option.name;
+          return (
+            <TouchableOpacity
+              style={[styles.textOption, isSelected && styles.selectedOption]}
+              key={index}
+              onPress={() => setSelectedOption(option.name)}
+            >
+              <Text style={[styles.text, isSelected && styles.selectedText]}>
+                {option.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </GestureHandlerRootView>
   );
 };
@@ -116,7 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     position: "absolute",
-    bottom: 0,
+    bottom: 16,
     alignSelf: "center",
   },
   cambutton: {
@@ -126,11 +133,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 500,
     backgroundColor: COLORS.WHITE,
-    borderWidth: 6,
+    borderWidth: 4,
     borderColor: "#d9d9d9",
     marginHorizontal: 6,
   },
   message: {
     marginVertical: 10,
+  },
+  extraOptions: {
+    backgroundColor: "#000",
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  text: {
+    color: "white",
+    fontWeight: "500",
+  },
+  selectedText: {
+    color: "black",
+  },
+  textOption: {
+    borderWidth: 1,
+    borderColor: COLORS.WHITE,
+    padding: 10,
+    borderRadius: 10,
+  },
+  selectedOption: {
+    backgroundColor: COLORS.MAIN_BACKGROUND,
   },
 });

@@ -36,7 +36,19 @@ export const APP_ICONS = {
   SEARCH: (
     <Ionicons
       name={"search-outline"}
-      style={{ color: COLORS.BACKGROUND, fontSize: 30 }}
+      style={{ color: COLORS.BLACK, fontSize: 30 }}
+    />
+  ),
+  TRANSLATE: (
+    <Ionicons
+      name={"language-outline"}
+      style={{ color: COLORS.BLACK, fontSize: 30 }}
+    />
+  ),
+  HOMEWORK: (
+    <Ionicons
+      name={"school-outline"}
+      style={{ color: COLORS.BLACK, fontSize: 30 }}
     />
   ),
 };
