@@ -16,8 +16,10 @@ import {
 import Button from "../Button/Button";
 import { APP_ICONS, COLORS } from "../../context/Settings";
 import { Ionicons, AntDesign } from "react-native-vector-icons";
+import Models from "../Model/Model";
+import PermissionScreen from "./PermissionScreen";
 
-const { width: windowWidth } = Dimensions.get("window");
+const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -27,6 +29,9 @@ const HomeScreen = () => {
   const [zoom, setZoom] = useState(0);
   const [selectedOption, setSelectedOption] = useState("Search");
   const [flashEnabled, setFlashEnabled] = React.useState(false);
+
+  const [modelVisable, setModelVisable] = React.useState(false);
+  const [menuModelVisable, setMenuModelVisable] = React.useState(false);
 
   if (!permission) {
     return (
@@ -38,17 +43,16 @@ const HomeScreen = () => {
 
   if (!permission.granted) {
     return (
-      <View style={styles.outline}>
-        <Text style={styles.message}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
+      <PermissionScreen
+        onPress={requestPermission}
+        title={"Grant Permission."}
+      />
     );
   }
 
   const _takePicture = async () => {
     if (cameraRef.current) {
+      setModelVisable(true);
       const photo = await cameraRef.current.takePictureAsync();
       console.log(photo);
       setCapturedImage(photo.uri);
@@ -80,45 +84,63 @@ const HomeScreen = () => {
     },
   ];
 
+  const MENU_OPTIONS = [
+    {
+      name: "Image to PDF",
+    },
+  ];
+
   return (
     <GestureHandlerRootView style={styles.container}>
-      {!capturedImage && (
-        <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
-          <CameraView
-            style={styles.camera}
-            facing={facing}
-            zoom={zoom}
-            ref={cameraRef}
-            enableTorch={flashEnabled}
-          >
-            <View style={styles.navBar}>
-              <TouchableOpacity onPress={() => setFlashEnabled(!flashEnabled)}>
-                <Text style={styles.navBarIcon}>
-                  {flashEnabled ? APP_ICONS.FLASH_ON : APP_ICONS.FLASH_OFF}
-                </Text>
-              </TouchableOpacity>
-              <Text style={styles.navBarText}>BOOTH</Text>
-              <TouchableOpacity>
-                <Text style={styles.navBarIcon}>{APP_ICONS.DOTS}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.scanIconContainer}>
-              <Ionicons
-                name="scan"
-                size={windowWidth * 1}
-                color="rgba(255, 255, 255, 0.5)"
-              />
-            </View>
-            <View style={[styles.buttonContainer]}>
-              <Button
-                title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
-                style={styles.cambutton}
-                //onPress={_takePicture}
-              />
-            </View>
-          </CameraView>
-        </PinchGestureHandler>
+      {menuModelVisable && (
+        <Models
+          visible={menuModelVisable}
+          onClose={setMenuModelVisable}
+          customHeight={windowHeight * 0.4}
+        />
       )}
+      {modelVisable && (
+        <Models
+          visible={modelVisable}
+          onClose={setModelVisable}
+          customHeight={windowHeight * 0.8}
+        />
+      )}
+      <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
+        <CameraView
+          style={styles.camera}
+          facing={facing}
+          zoom={zoom}
+          ref={cameraRef}
+          enableTorch={flashEnabled}
+        >
+          <View style={styles.navBar}>
+            <TouchableOpacity onPress={() => setFlashEnabled(!flashEnabled)}>
+              <Text style={styles.navBarIcon}>
+                {flashEnabled ? APP_ICONS.FLASH_ON : APP_ICONS.FLASH_OFF}
+              </Text>
+            </TouchableOpacity>
+            <Text style={styles.navBarText}>BOOTH</Text>
+            <TouchableOpacity onPress={() => setMenuModelVisable(true)}>
+              <Text style={styles.navBarIcon}>{APP_ICONS.DOTS}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.scanIconContainer}>
+            <Ionicons
+              name="scan"
+              size={windowWidth * 1}
+              color="rgba(255, 255, 255, 0.5)"
+            />
+          </View>
+          <View style={[styles.buttonContainer]}>
+            <Button
+              title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
+              style={styles.cambutton}
+              onPress={_takePicture}
+            />
+          </View>
+        </CameraView>
+      </PinchGestureHandler>
       <View style={styles.extraOptions}>
         {OPTIONS.map((option, index) => {
           const isSelected = selectedOption === option.name;
@@ -193,7 +215,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.WHITE,
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 50,
   },
   selectedOption: {
     backgroundColor: COLORS.MAIN_BACKGROUND,
