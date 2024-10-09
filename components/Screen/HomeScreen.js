@@ -13,11 +13,13 @@ import {
   GestureHandlerRootView,
   PinchGestureHandler,
 } from "react-native-gesture-handler";
+
 import Button from "../Button/Button";
-import { APP_ICONS, COLORS } from "../../context/Settings";
-import { Ionicons, AntDesign } from "react-native-vector-icons";
+import { APP_ICONS, COLORS, OPTIONS } from "../../context/Settings";
+import { Ionicons } from "react-native-vector-icons";
 import Models from "../Model/Model";
 import PermissionScreen from "./PermissionScreen";
+import SideMenu from "../Menu/SideMenu";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
@@ -46,6 +48,11 @@ const HomeScreen = () => {
       <PermissionScreen
         onPress={requestPermission}
         title={"Grant Permission."}
+        icon_name={"camera-outline"}
+        header={"Let's get you started."}
+        description={
+          "To proceed, we need your permission to access the camera on your device. This will allow us to offer you a seamless and enhanced experience. Please grant the necessary permissions to continue using all available features."
+        }
       />
     );
   }
@@ -54,9 +61,41 @@ const HomeScreen = () => {
     if (cameraRef.current) {
       setModelVisable(true);
       const photo = await cameraRef.current.takePictureAsync();
+      performOCR(photo);
       console.log(photo);
       setCapturedImage(photo.uri);
     }
+  };
+
+  // Function to perform OCR on an image
+  // and extract text
+  const performOCR = (file) => {
+    let myHeaders = new Headers();
+    myHeaders.append(
+      "apikey",
+
+      // ADDD YOUR API KEY HERE
+      "FEmvQr5uj99ZUvk3essuYb6P5lLLBS20"
+    );
+    myHeaders.append("Content-Type", "multipart/form-data");
+
+    let raw = file;
+    let requestOptions = {
+      method: "POST",
+      redirect: "follow",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    // Send a POST request to the OCR API
+    fetch("https://api.apilayer.com/image_to_text/upload", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        // Set the extracted text in state
+        console.log(result["all_text"]);
+        setExtractedText(result["all_text"]);
+      })
+      .catch((error) => console.log("error", error));
   };
 
   const onPinchGestureEvent = (event) => {
@@ -65,31 +104,6 @@ const HomeScreen = () => {
     setZoom(newZoom);
   };
 
-  const OPTIONS = [
-    {
-      name: "Translate",
-      icon: APP_ICONS.TRANSLATE,
-    },
-    {
-      name: "Search",
-      icon: APP_ICONS.SEARCH,
-    },
-    {
-      name: "Homework",
-      icon: APP_ICONS.HOMEWORK,
-    },
-    {
-      name: "Text",
-      icon: APP_ICONS.DOC,
-    },
-  ];
-
-  const MENU_OPTIONS = [
-    {
-      name: "Image to PDF",
-    },
-  ];
-
   return (
     <GestureHandlerRootView style={styles.container}>
       {menuModelVisable && (
@@ -97,6 +111,7 @@ const HomeScreen = () => {
           visible={menuModelVisable}
           onClose={setMenuModelVisable}
           customHeight={windowHeight * 0.4}
+          children={<SideMenu title={"Options"} data={MENU_OPTIONS} />}
         />
       )}
       {modelVisable && (

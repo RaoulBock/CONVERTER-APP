@@ -70,3 +70,29 @@ export const APP_ICONS = {
     />
   ),
 };
+
+export const OPTIONS = [
+  {
+    name: "Translate",
+    icon: APP_ICONS.TRANSLATE,
+  },
+  {
+    name: "Search",
+    icon: APP_ICONS.SEARCH,
+  },
+  {
+    name: "Homework",
+    icon: APP_ICONS.HOMEWORK,
+  },
+  {
+    name: "Text",
+    icon: APP_ICONS.DOC,
+  },
+];
+
+export const MENU_OPTIONS = [
+  {
+    name: "Image to PDF",
+    onPress: () => console.log("Image to PDF"),
+  },
+];
