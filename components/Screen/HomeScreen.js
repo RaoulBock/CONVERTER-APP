@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import axios from "axios";
 
 import React, { useState, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -15,11 +14,13 @@ import {
 } from "react-native-gesture-handler";
 
 import Button from "../Button/Button";
-import { APP_ICONS, COLORS, OPTIONS } from "../../context/Settings";
+import { APP_ICONS, COLORS } from "../../context/Settings";
 import { Ionicons } from "react-native-vector-icons";
 import Models from "../Model/Model";
 import PermissionScreen from "./PermissionScreen";
 import SideMenu from "../Menu/SideMenu";
+import { performOCR } from "../../utils/helpers";
+import ResultView from "../Views/ResultView";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
@@ -33,7 +34,31 @@ const HomeScreen = () => {
   const [flashEnabled, setFlashEnabled] = React.useState(false);
 
   const [modelVisable, setModelVisable] = React.useState(false);
-  const [menuModelVisable, setMenuModelVisable] = React.useState(false);
+  // State to hold extracted text
+  const [extractedText, setExtractedText] = React.useState("");
+
+  const OPTIONS = [
+    {
+      name: "Translate",
+      icon: APP_ICONS.TRANSLATE,
+      onPress: () => console.log("Translate"),
+    },
+    {
+      name: "Search",
+      icon: APP_ICONS.SEARCH,
+      onPress: () => console.log("Search"),
+    },
+    {
+      name: "Homework",
+      icon: APP_ICONS.HOMEWORK,
+      onPress: () => console.log("Homework"),
+    },
+    {
+      name: "Image to Text",
+      icon: APP_ICONS.DOC,
+      onPress: () => _takePicture_CONVERT_IMAGE_TO_TEXT(),
+    },
+  ];
 
   if (!permission) {
     return (
@@ -57,45 +82,15 @@ const HomeScreen = () => {
     );
   }
 
-  const _takePicture = async () => {
+  const _takePicture_CONVERT_IMAGE_TO_TEXT = async () => {
     if (cameraRef.current) {
       setModelVisable(true);
       const photo = await cameraRef.current.takePictureAsync();
-      performOCR(photo);
-      console.log(photo);
+      const data = await performOCR(photo);
+      setExtractedText(data);
+      console.log(data);
       setCapturedImage(photo.uri);
     }
-  };
-
-  // Function to perform OCR on an image
-  // and extract text
-  const performOCR = (file) => {
-    let myHeaders = new Headers();
-    myHeaders.append(
-      "apikey",
-
-      // ADDD YOUR API KEY HERE
-      "FEmvQr5uj99ZUvk3essuYb6P5lLLBS20"
-    );
-    myHeaders.append("Content-Type", "multipart/form-data");
-
-    let raw = file;
-    let requestOptions = {
-      method: "POST",
-      redirect: "follow",
-      headers: myHeaders,
-      body: raw,
-    };
-
-    // Send a POST request to the OCR API
-    fetch("https://api.apilayer.com/image_to_text/upload", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        // Set the extracted text in state
-        console.log(result["all_text"]);
-        setExtractedText(result["all_text"]);
-      })
-      .catch((error) => console.log("error", error));
   };
 
   const onPinchGestureEvent = (event) => {
@@ -106,19 +101,19 @@ const HomeScreen = () => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      {menuModelVisable && (
-        <Models
-          visible={menuModelVisable}
-          onClose={setMenuModelVisable}
-          customHeight={windowHeight * 0.4}
-          children={<SideMenu title={"Options"} data={MENU_OPTIONS} />}
-        />
-      )}
       {modelVisable && (
         <Models
           visible={modelVisable}
           onClose={setModelVisable}
           customHeight={windowHeight * 0.8}
+          children={
+            <ResultView
+              title={"Copy to clipboard"}
+              uri={capturedImage}
+              data={extractedText}
+              text={"Text extracted from image"}
+            />
+          }
         />
       )}
       <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
@@ -130,14 +125,11 @@ const HomeScreen = () => {
           enableTorch={flashEnabled}
         >
           <View style={styles.navBar}>
+            <Text style={styles.navBarText}>BOOTH</Text>
             <TouchableOpacity onPress={() => setFlashEnabled(!flashEnabled)}>
               <Text style={styles.navBarIcon}>
                 {flashEnabled ? APP_ICONS.FLASH_ON : APP_ICONS.FLASH_OFF}
               </Text>
-            </TouchableOpacity>
-            <Text style={styles.navBarText}>BOOTH</Text>
-            <TouchableOpacity onPress={() => setMenuModelVisable(true)}>
-              <Text style={styles.navBarIcon}>{APP_ICONS.DOTS}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.scanIconContainer}>
@@ -151,7 +143,9 @@ const HomeScreen = () => {
             <Button
               title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
               style={styles.cambutton}
-              onPress={_takePicture}
+              onPress={
+                OPTIONS.find((opt) => opt.name === selectedOption).onPress
+              }
             />
           </View>
         </CameraView>

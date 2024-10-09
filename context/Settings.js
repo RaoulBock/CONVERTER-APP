@@ -69,26 +69,13 @@ export const APP_ICONS = {
       style={{ color: COLORS.WHITE, fontSize: 30 }}
     />
   ),
+  CLIPBOARD: (
+    <Ionicons
+      name={"clipboard-outline"}
+      style={{ color: COLORS.BACKGROUND, fontSize: 30 }}
+    />
+  ),
 };
-
-export const OPTIONS = [
-  {
-    name: "Translate",
-    icon: APP_ICONS.TRANSLATE,
-  },
-  {
-    name: "Search",
-    icon: APP_ICONS.SEARCH,
-  },
-  {
-    name: "Homework",
-    icon: APP_ICONS.HOMEWORK,
-  },
-  {
-    name: "Text",
-    icon: APP_ICONS.DOC,
-  },
-];
 
 export const MENU_OPTIONS = [
   {
