@@ -11,6 +11,8 @@ const AppProvider = ({ children }) => {
   const [cameraModelVisable, setCameraModelVisable] = React.useState(false);
   const [docModelVisable, setDocModelVisable] = React.useState(false);
   const [pdfToDocModelVisable, setPDFToDocModelVisable] = React.useState(false);
+  const [editViewVisable, setEditViewVisable] = React.useState(false);
+  const [capturedImage, setCapturedImage] = React.useState(null);
 
   return (
     <AppContext.Provider
@@ -23,6 +25,10 @@ const AppProvider = ({ children }) => {
         setDocModelVisable,
         pdfToDocModelVisable,
         setPDFToDocModelVisable,
+        editViewVisable,
+        setEditViewVisable,
+        capturedImage,
+        setCapturedImage,
       }}
     >
       {children}

@@ -21,14 +21,22 @@ import PermissionScreen from "./PermissionScreen";
 import SideMenu from "../Menu/SideMenu";
 import { performOCR } from "../../utils/helpers";
 import ResultView from "../Views/ResultView";
+import { AppContext } from "../../context/AppProvider";
+import EditView from "../Views/EditView";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
 const HomeScreen = () => {
+  const {
+    editViewVisable,
+    setEditViewVisable,
+    capturedImage,
+    setCapturedImage,
+  } = React.useContext(AppContext);
   const [permission, requestPermission] = useCameraPermissions();
   const facing = "back";
   const cameraRef = useRef(null);
-  const [capturedImage, setCapturedImage] = useState(null);
+
   const [zoom, setZoom] = useState(0);
   const [selectedOption, setSelectedOption] = useState("Search");
   const [flashEnabled, setFlashEnabled] = React.useState(false);
@@ -84,12 +92,13 @@ const HomeScreen = () => {
 
   const _takePicture_CONVERT_IMAGE_TO_TEXT = async () => {
     if (cameraRef.current) {
-      setModelVisable(true);
+      //setModelVisable(true);
       const photo = await cameraRef.current.takePictureAsync();
-      const data = await performOCR(photo);
-      setExtractedText(data);
-      console.log(data);
+      // const data = await performOCR(photo);
+      // setExtractedText(data);
+      // console.log(data);
       setCapturedImage(photo.uri);
+      setEditViewVisable(true);
     }
   };
 
@@ -116,6 +125,14 @@ const HomeScreen = () => {
           }
         />
       )}
+      {editViewVisable && (
+        <Models
+          visible={editViewVisable}
+          onClose={setEditViewVisable}
+          customHeight={windowHeight * 0.8}
+          children={<EditView />}
+        />
+      )}
       <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
         <CameraView
           style={styles.camera}
@@ -132,13 +149,13 @@ const HomeScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.scanIconContainer}>
+          {/* <View style={styles.scanIconContainer}>
             <Ionicons
               name="scan"
               size={windowWidth * 1}
               color="rgba(255, 255, 255, 0.5)"
             />
-          </View>
+          </View> */}
           <View style={[styles.buttonContainer]}>
             <Button
               title={OPTIONS.find((opt) => opt.name === selectedOption).icon}

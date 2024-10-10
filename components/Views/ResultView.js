@@ -4,18 +4,17 @@ import { APP_ICONS, COLORS } from "../../context/Settings";
 import Button from "../Button/Button";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const ResultView = ({ title, uri, data, text }) => {
+const ResultView = ({ onCopy, uri, data, text }) => {
   return (
     <View style={styles.outline}>
       <ScrollView>
-        {/* <Text style={styles.title}>{title}</Text> */}
         <View style={styles.container}>
-          <Image source={{ uri: uri }} style={styles.image} />
+          <Image source={{ uri: uri }} style={styles.image} resizeMode="auto" />
         </View>
         <View>
           <View style={styles.grid}>
             <Text style={styles.title}>{text}</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onCopy}>
               <Text>{APP_ICONS.CLIPBOARD}</Text>
             </TouchableOpacity>
           </View>

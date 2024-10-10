@@ -27,14 +27,4 @@ export const performOCR = async (file) => {
   } catch (err) {
     console.log(err);
   }
-
-  // // Send a POST request to the OCR API
-  // fetch("https://api.apilayer.com/image_to_text/upload", requestOptions)
-  //   .then((response) => response.json())
-  //   .then((result) => {
-  //     // Set the extracted text in state
-  //     console.log(result["all_text"]);
-  //     return result["all_text"];
-  //   })
-  //   .catch((error) => console.log("error", error));
 };
