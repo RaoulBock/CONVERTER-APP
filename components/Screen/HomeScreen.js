@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 
 import React, { useState, useRef } from "react";
@@ -23,6 +24,7 @@ import ResultView from "../Views/ResultView";
 import { AppContext } from "../../context/AppProvider";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
+const OPTION_WIDTH = 100; // Width of each option item
 
 const HomeScreen = () => {
   const {
@@ -40,6 +42,17 @@ const HomeScreen = () => {
   const [modelVisible, setModelVisible] = React.useState(false);
 
   const [loading, setLoading] = React.useState(false); // Loading state
+  const [activeOptionIndex, setActiveOptionIndex] = React.useState(0);
+  const scrollViewRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        x: activeOptionIndex * OPTION_WIDTH,
+        animated: true,
+      });
+    }
+  }, [activeOptionIndex]);
 
   if (!permission) {
     return (
@@ -83,23 +96,21 @@ const HomeScreen = () => {
     setZoom(newZoom);
   };
 
+  const OPTIONS_MENU = [
+    {
+      name: "Image to Text",
+      icon: APP_ICONS.DOC,
+      onPress: _takePicture_CONVERT_IMAGE_TO_TEXT,
+    },
+    {
+      name: "Image detection",
+      icon: APP_ICONS.SEARCH,
+      onPress: () => console.log("Image detection pressed"),
+    },
+  ];
+
   return (
     <GestureHandlerRootView style={styles.container}>
-      {modelVisible && (
-        <Models
-          visible={modelVisible}
-          onClose={setModelVisible}
-          customHeight={windowHeight * 1}
-          children={
-            <ResultView
-              title={"Copy to clipboard"}
-              uri={capturedImage}
-              data={extractedText}
-            />
-          }
-        />
-      )}
-
       <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
         <CameraView
           style={styles.camera}
@@ -117,15 +128,39 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <Button
-              title={APP_ICONS.DOC}
-              style={styles.cambutton}
-              onPress={_takePicture_CONVERT_IMAGE_TO_TEXT}
-            />
+          <View style={styles.optionsContainer}>
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              decelerationRate="fast"
+              // snapToInterval={OPTION_WIDTH}
+              snapToAlignment="center"
+              contentContainerStyle={[
+                styles.scrollViewContent,
+                { paddingHorizontal: (windowWidth - OPTION_WIDTH) / 2 },
+              ]}
+              onMomentumScrollEnd={(event) => {
+                const contentOffset = event.nativeEvent.contentOffset.x;
+                const pageNum = Math.round(contentOffset / OPTION_WIDTH);
+                setActiveOptionIndex(pageNum);
+              }}
+            >
+              {OPTIONS_MENU.map((option, index) => (
+                <View key={index} style={styles.optionItem}>
+                  <Button
+                    title={option.icon}
+                    style={[
+                      styles.optionButton,
+                      index === activeOptionIndex && styles.activeOptionButton,
+                    ]}
+                    onPress={option.onPress}
+                  />
+                </View>
+              ))}
+            </ScrollView>
           </View>
 
-          {/* Loading indicator */}
           {loading && (
             <View style={styles.overlay}>
               <ActivityIndicator size="large" color={COLORS.WHITE} />
@@ -160,6 +195,8 @@ const styles = StyleSheet.create({
     bottom: 16,
     alignSelf: "center",
     marginBottom: 30,
+    flexDirection: "row",
+    alignItems: "center",
   },
   cambutton: {
     width: 70,
@@ -207,5 +244,37 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.7)", // Dark overlay with transparency
     justifyContent: "center",
     alignItems: "center",
+  },
+  optionsContainer: {
+    position: "absolute",
+    bottom: 30,
+    left: 0,
+    right: 0,
+    height: 100,
+  },
+  scrollViewContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  optionItem: {
+    width: OPTION_WIDTH,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  optionButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  activeOptionButton: {
+    backgroundColor: COLORS.WHITE,
+  },
+  optionText: {
+    color: COLORS.WHITE,
+    marginTop: 8,
+    fontSize: 12,
   },
 });
