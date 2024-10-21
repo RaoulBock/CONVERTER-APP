@@ -3,6 +3,7 @@ import { Ionicons, AntDesign } from "react-native-vector-icons";
 export const APP_PAGES = {
   APP: {
     HOME: "HOME",
+    RESULT: "RESULT",
   },
 };
 
@@ -72,6 +73,12 @@ export const APP_ICONS = {
   CLIPBOARD: (
     <Ionicons
       name={"clipboard-outline"}
+      style={{ color: COLORS.BACKGROUND, fontSize: 30 }}
+    />
+  ),
+  BACK: (
+    <Ionicons
+      name={"arrow-back-outline"}
       style={{ color: COLORS.BACKGROUND, fontSize: 30 }}
     />
   ),

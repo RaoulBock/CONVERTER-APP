@@ -13,6 +13,7 @@ const AppProvider = ({ children }) => {
   const [pdfToDocModelVisable, setPDFToDocModelVisable] = React.useState(false);
   const [editViewVisable, setEditViewVisable] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState(null);
+  const [extractedText, setExtractedText] = React.useState("");
 
   return (
     <AppContext.Provider
@@ -29,6 +30,8 @@ const AppProvider = ({ children }) => {
         setEditViewVisable,
         capturedImage,
         setCapturedImage,
+        extractedText,
+        setExtractedText,
       }}
     >
       {children}

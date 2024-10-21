@@ -15,7 +15,7 @@ import {
 } from "react-native-gesture-handler";
 
 import Button from "../Button/Button";
-import { APP_ICONS, COLORS } from "../../context/Settings";
+import { APP_ICONS, APP_PAGES, COLORS } from "../../context/Settings";
 import Models from "../Model/Model";
 import PermissionScreen from "./PermissionScreen";
 import { performOCR } from "../../utils/helpers";
@@ -25,14 +25,20 @@ import { AppContext } from "../../context/AppProvider";
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
 const HomeScreen = () => {
-  const { capturedImage, setCapturedImage } = React.useContext(AppContext);
+  const {
+    capturedImage,
+    setCapturedImage,
+    setNavPage,
+    extractedText,
+    setExtractedText,
+  } = React.useContext(AppContext);
   const [permission, requestPermission] = useCameraPermissions();
   const facing = "back";
   const cameraRef = useRef(null);
   const [zoom, setZoom] = useState(0);
   const [flashEnabled, setFlashEnabled] = React.useState(false);
   const [modelVisible, setModelVisible] = React.useState(false);
-  const [extractedText, setExtractedText] = React.useState("");
+
   const [loading, setLoading] = React.useState(false); // Loading state
 
   if (!permission) {
@@ -59,14 +65,15 @@ const HomeScreen = () => {
 
   const _takePicture_CONVERT_IMAGE_TO_TEXT = async () => {
     if (cameraRef.current) {
-      setLoading(true); // Start loading
       const photo = await cameraRef.current.takePictureAsync();
+      setLoading(true); // Start loading
       const data = await performOCR(photo);
       setExtractedText(data);
       setModelVisible(true);
       console.log(data);
       setCapturedImage(photo.uri);
       setLoading(false); // Stop loading
+      setNavPage(APP_PAGES.APP.RESULT);
     }
   };
 

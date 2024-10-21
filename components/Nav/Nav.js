@@ -1,11 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS } from "../../context/Settings";
 
-const Nav = ({ title }) => {
+const Nav = ({ title, icon, iconTwo, onPress, onPressTwo }) => {
   return (
     <View style={styles.outline}>
-      <Text style={styles.title}>{title}</Text>
+      {icon && (
+        <TouchableOpacity onPress={onPress}>
+          <Text>{icon}</Text>
+        </TouchableOpacity>
+      )}
+      {title && <Text style={styles.title}>{title}</Text>}
+      {iconTwo && (
+        <TouchableOpacity onPress={onPressTwo}>
+          <Text>{iconTwo}</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

@@ -10,11 +10,10 @@ import {
 import React from "react";
 import { APP_ICONS, COLORS } from "../../context/Settings";
 
-const ResultView = ({ onCopy, uri, data, text }) => {
+const ResultView = ({ onCopy, uri, data, text, onScroll }) => {
   const handleCopy = async () => {
     try {
       await Clipboard.setString(data);
-      // Optionally, you can add some feedback here, like a toast message
       console.log("Text copied to clipboard");
     } catch (error) {
       console.error("Failed to copy text: ", error);
@@ -33,7 +32,7 @@ const ResultView = ({ onCopy, uri, data, text }) => {
             <Text>{APP_ICONS.CLIPBOARD}</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView>
+        <ScrollView onScroll={onScroll}>
           <Text style={styles.data} selectable={true}>
             {data}
           </Text>
