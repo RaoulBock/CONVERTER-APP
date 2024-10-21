@@ -14,6 +14,7 @@
     "expo-camera": "~15.0.16",
     "expo-document-picker": "~12.0.2",
     "expo-file-system": "~17.0.1",
+    "expo-image-manipulator": "~12.0.5",
     "expo-image-picker": "~15.0.7",
     "expo-media-library": "~16.0.5",
     "expo-print": "~13.0.1",
@@ -24,8 +25,7 @@
     "react-native": "0.74.5",
     "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.16.1",
-    "react-native-vector-icons": "^10.2.0",
-    "expo-image-manipulator": "~12.0.5"
+    "react-native-vector-icons": "^10.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

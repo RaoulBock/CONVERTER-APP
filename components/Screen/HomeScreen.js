@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 
 import React, { useState, useRef } from "react";
@@ -15,58 +16,24 @@ import {
 
 import Button from "../Button/Button";
 import { APP_ICONS, COLORS } from "../../context/Settings";
-import { Ionicons } from "react-native-vector-icons";
 import Models from "../Model/Model";
 import PermissionScreen from "./PermissionScreen";
-import SideMenu from "../Menu/SideMenu";
 import { performOCR } from "../../utils/helpers";
 import ResultView from "../Views/ResultView";
 import { AppContext } from "../../context/AppProvider";
-import EditView from "../Views/EditView";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
 const HomeScreen = () => {
-  const {
-    editViewVisable,
-    setEditViewVisable,
-    capturedImage,
-    setCapturedImage,
-  } = React.useContext(AppContext);
+  const { capturedImage, setCapturedImage } = React.useContext(AppContext);
   const [permission, requestPermission] = useCameraPermissions();
   const facing = "back";
   const cameraRef = useRef(null);
-
   const [zoom, setZoom] = useState(0);
-  const [selectedOption, setSelectedOption] = useState("Search");
   const [flashEnabled, setFlashEnabled] = React.useState(false);
-
-  const [modelVisable, setModelVisable] = React.useState(false);
-  // State to hold extracted text
+  const [modelVisible, setModelVisible] = React.useState(false);
   const [extractedText, setExtractedText] = React.useState("");
-
-  const OPTIONS = [
-    {
-      name: "Translate",
-      icon: APP_ICONS.TRANSLATE,
-      onPress: () => console.log("Translate"),
-    },
-    {
-      name: "Search",
-      icon: APP_ICONS.SEARCH,
-      onPress: () => console.log("Search"),
-    },
-    {
-      name: "Homework",
-      icon: APP_ICONS.HOMEWORK,
-      onPress: () => console.log("Homework"),
-    },
-    {
-      name: "Image to Text",
-      icon: APP_ICONS.DOC,
-      onPress: () => _takePicture_CONVERT_IMAGE_TO_TEXT(),
-    },
-  ];
+  const [loading, setLoading] = React.useState(false); // Loading state
 
   if (!permission) {
     return (
@@ -92,13 +59,14 @@ const HomeScreen = () => {
 
   const _takePicture_CONVERT_IMAGE_TO_TEXT = async () => {
     if (cameraRef.current) {
-      //setModelVisable(true);
+      setLoading(true); // Start loading
       const photo = await cameraRef.current.takePictureAsync();
-      // const data = await performOCR(photo);
-      // setExtractedText(data);
-      // console.log(data);
+      const data = await performOCR(photo);
+      setExtractedText(data);
+      setModelVisible(true);
+      console.log(data);
       setCapturedImage(photo.uri);
-      setEditViewVisable(true);
+      setLoading(false); // Stop loading
     }
   };
 
@@ -110,29 +78,21 @@ const HomeScreen = () => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      {modelVisable && (
+      {modelVisible && (
         <Models
-          visible={modelVisable}
-          onClose={setModelVisable}
-          customHeight={windowHeight * 0.8}
+          visible={modelVisible}
+          onClose={setModelVisible}
+          customHeight={windowHeight * 1}
           children={
             <ResultView
               title={"Copy to clipboard"}
               uri={capturedImage}
               data={extractedText}
-              text={"Text extracted from image"}
             />
           }
         />
       )}
-      {editViewVisable && (
-        <Models
-          visible={editViewVisable}
-          onClose={setEditViewVisable}
-          customHeight={windowHeight * 0.8}
-          children={<EditView />}
-        />
-      )}
+
       <PinchGestureHandler onGestureEvent={onPinchGestureEvent}>
         <CameraView
           style={styles.camera}
@@ -149,40 +109,24 @@ const HomeScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          {/* <View style={styles.scanIconContainer}>
-            <Ionicons
-              name="scan"
-              size={windowWidth * 1}
-              color="rgba(255, 255, 255, 0.5)"
-            />
-          </View> */}
-          <View style={[styles.buttonContainer]}>
+
+          <View style={styles.buttonContainer}>
             <Button
-              title={OPTIONS.find((opt) => opt.name === selectedOption).icon}
+              title={APP_ICONS.DOC}
               style={styles.cambutton}
-              onPress={
-                OPTIONS.find((opt) => opt.name === selectedOption).onPress
-              }
+              onPress={_takePicture_CONVERT_IMAGE_TO_TEXT}
             />
           </View>
+
+          {/* Loading indicator */}
+          {loading && (
+            <View style={styles.overlay}>
+              <ActivityIndicator size="large" color={COLORS.WHITE} />
+              <Text style={styles.loadingText}>Processing...</Text>
+            </View>
+          )}
         </CameraView>
       </PinchGestureHandler>
-      <View style={styles.extraOptions}>
-        {OPTIONS.map((option, index) => {
-          const isSelected = selectedOption === option.name;
-          return (
-            <TouchableOpacity
-              style={[styles.textOption, isSelected && styles.selectedOption]}
-              key={index}
-              onPress={() => setSelectedOption(option.name)}
-            >
-              <Text style={[styles.text, isSelected && styles.selectedText]}>
-                {option.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
     </GestureHandlerRootView>
   );
 };
@@ -208,6 +152,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 16,
     alignSelf: "center",
+    marginBottom: 30,
   },
   cambutton: {
     width: 70,
@@ -220,41 +165,14 @@ const styles = StyleSheet.create({
     borderColor: "#d9d9d9",
     marginHorizontal: 6,
   },
-  message: {
-    marginVertical: 10,
-  },
-  extraOptions: {
-    backgroundColor: "#000",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-  },
-  text: {
-    color: "white",
-    fontWeight: "500",
-  },
-  selectedText: {
-    color: "black",
-  },
-  textOption: {
-    borderWidth: 1,
-    borderColor: COLORS.WHITE,
-    padding: 10,
-    borderRadius: 50,
-  },
-  selectedOption: {
-    backgroundColor: COLORS.MAIN_BACKGROUND,
-  },
-  scanIconContainer: {
+  loadingContainer: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
+    bottom: "50%",
+    alignSelf: "center",
+  },
+  loadingText: {
+    color: COLORS.WHITE,
+    marginTop: 10,
   },
   navBar: {
     position: "absolute",
@@ -276,5 +194,11 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontSize: 18,
     fontWeight: "bold",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)", // Dark overlay with transparency
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
