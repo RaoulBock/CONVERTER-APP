@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from "react-native";
 import AppProvider, { AppContext } from "./context/AppProvider";
 import { APP_PAGES, COLORS } from "./context/Settings";
 import HomeScreen from "./components/Screen/HomeScreen";
-import ResultScreen from "./components/Screen/ResultScreen";
 
 function App() {
   return (
@@ -23,14 +22,7 @@ const NavWrapper = () => {
 
   return (
     <View style={styles.container}>
-      {/* <StatusBar
-        animated={true}
-        backgroundColor={COLORS.WHITE}
-        barStyle={"dark-content"}
-        style="dark"
-      /> */}
       {navPage === APP_PAGES.APP.HOME && <HomeScreen />}
-      {navPage === APP_PAGES.APP.RESULT && <ResultScreen />}
     </View>
   );
 };

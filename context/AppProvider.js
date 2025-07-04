@@ -8,30 +8,12 @@ export const AppContext = React.createContext({
 
 const AppProvider = ({ children }) => {
   const [navPage, setNavPage] = React.useState(APP_PAGES.APP.HOME);
-  const [cameraModelVisable, setCameraModelVisable] = React.useState(false);
-  const [docModelVisable, setDocModelVisable] = React.useState(false);
-  const [pdfToDocModelVisable, setPDFToDocModelVisable] = React.useState(false);
-  const [editViewVisable, setEditViewVisable] = React.useState(false);
-  const [capturedImage, setCapturedImage] = React.useState(null);
-  const [extractedText, setExtractedText] = React.useState("");
 
   return (
     <AppContext.Provider
       value={{
         navPage,
         setNavPage,
-        cameraModelVisable,
-        setCameraModelVisable,
-        docModelVisable,
-        setDocModelVisable,
-        pdfToDocModelVisable,
-        setPDFToDocModelVisable,
-        editViewVisable,
-        setEditViewVisable,
-        capturedImage,
-        setCapturedImage,
-        extractedText,
-        setExtractedText,
       }}
     >
       {children}
